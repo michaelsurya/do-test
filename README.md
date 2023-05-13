@@ -1,6 +1,12 @@
 # Digit Owl Selection Test
- 
- ---
+
+----
+
+<p>For testing purposes you can use the following credentials: </p>
+- test@email.com - password
+- customer@email.com - password
+
+---
  
 **GraphQL Schema-first**
  - I used GraphQL Code Gen along with the typescript-mongodb plugin to generate the types based on my schema, which then is used as the type in my typescript.
