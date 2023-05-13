@@ -5,7 +5,7 @@ export interface IUserDataSource {
 
   getUser(id: string): Promise<UserDbObject | null>;
 
-  createUser(user: Partial<UserDbObject>): Promise<string>;
+  createUser(user: Partial<UserDbObject>, session?: any): Promise<string>;
 
-  editUser(userId: string, user: Partial<UserDbObject>): Promise<UserDbObject>;
+  editUser(userId: string, user: Partial<UserDbObject>, session?: any): Promise<UserDbObject>;
 }

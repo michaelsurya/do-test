@@ -1,4 +1,8 @@
 export const TYPES = {
+  IContextProvider: Symbol.for("IContextProvider"),
+  IDatabaseConnection: Symbol.for("IDatabaseConnection"),
+  IFirebaseConnection: Symbol.for("IFirebaseConnection"),
+
   IAddressDataSource: Symbol.for("IAddressDataSource"),
   IAddressRepository: Symbol.for("IAddressRepository"),
   IAddressService: Symbol.for("IAddressService"),
@@ -9,10 +13,6 @@ export const TYPES = {
 
   ICartRepository: Symbol.for("ICartRepository"),
   ICartService: Symbol.for("ICartService"),
-
-  IContextProvider: Symbol.for("IContextProvider"),
-  IDatabaseService: Symbol.for("IDatabaseService"),
-  IFirebaseService: Symbol.for("IFirebaseService"),
 
   IOrderDataSource: Symbol.for("IOrderDataSource"),
   IOrderRepository: Symbol.for("IOrderRepository"),

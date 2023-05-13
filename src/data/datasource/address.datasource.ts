@@ -2,18 +2,19 @@ import { injectable, inject } from "inversify";
 
 import { TYPES } from "di/type.di";
 
-import { IAddressDataSource, IDatabaseService } from "data/index.data";
+import { IAddressDataSource, IDatabaseConnection } from "data/index.data";
 import { AddressDbObject } from "generated/types";
-import { Collection, Db, ObjectId } from "mongodb";
+import { ClientSession, Collection, Db, ObjectId } from "mongodb";
 
 @injectable()
 export class AddressDataSource implements IAddressDataSource {
   constructor(
-    @inject(TYPES.IDatabaseService) private readonly dbService: IDatabaseService
+    @inject(TYPES.IDatabaseConnection)
+    private readonly dbConnection: IDatabaseConnection
   ) {}
 
   private async getCollection(): Promise<Collection<AddressDbObject>> {
-    const db: Db = await this.dbService.getDb();
+    const db: Db = await this.dbConnection.getDb();
     return db.collection("address");
   }
 
@@ -49,17 +50,21 @@ export class AddressDataSource implements IAddressDataSource {
 
   public async createAddress(
     userId: string,
-    address: Omit<AddressDbObject, "_id" | "user">
+    address: Omit<AddressDbObject, "_id" | "user">,
+    session: ClientSession | undefined
   ): Promise<string> {
     try {
       const collection: Collection<AddressDbObject> =
         await this.getCollection();
 
-      const { acknowledged, insertedId } = await collection.insertOne({
-        ...address,
-        _id: new ObjectId(),
-        user: new ObjectId(userId),
-      });
+      const { acknowledged, insertedId } = await collection.insertOne(
+        {
+          ...address,
+          _id: new ObjectId(),
+          user: new ObjectId(userId),
+        },
+        session && { session }
+      );
 
       if (!acknowledged) {
         throw new Error("Create address failed");
@@ -73,7 +78,8 @@ export class AddressDataSource implements IAddressDataSource {
 
   public async editAddress(
     addressId: string,
-    address: Omit<AddressDbObject, "_id" | "user">
+    address: Omit<AddressDbObject, "_id" | "user">,
+    session: ClientSession | undefined
   ): Promise<AddressDbObject> {
     try {
       const collection: Collection<AddressDbObject> =
@@ -86,7 +92,7 @@ export class AddressDataSource implements IAddressDataSource {
             ...address,
           },
         },
-        { returnDocument: "after" }
+        { returnDocument: "after", ...(session && { session }) }
       );
 
       if (!result) {

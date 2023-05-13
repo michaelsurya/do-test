@@ -2,27 +2,30 @@ import { injectable, inject } from "inversify";
 
 import { TYPES } from "di/type.di";
 
-import { IDatabaseService, IUserDataSource } from "data/index.data";
+import { IDatabaseConnection, IUserDataSource } from "data/index.data";
 import { UserDbObject } from "generated/types";
-import { Collection, Db, ObjectId } from "mongodb";
+import { ClientSession, Collection, Db, ObjectId } from "mongodb";
 
 @injectable()
 export class UserDataSource implements IUserDataSource {
   constructor(
-    @inject(TYPES.IDatabaseService) private readonly dbService: IDatabaseService
+    @inject(TYPES.IDatabaseConnection)
+    private readonly dbConnection: IDatabaseConnection
   ) {}
 
   private async getCollection(): Promise<Collection<UserDbObject>> {
-    const db: Db = await this.dbService.getDb();
+    const db: Db = await this.dbConnection.getDb();
     return db.collection("user");
   }
 
-  public async getUserByFirebaseId(firebaseId: string): Promise<UserDbObject | null> {
+  public async getUserByFirebaseId(
+    firebaseId: string
+  ): Promise<UserDbObject | null> {
     try {
       const collection: Collection<UserDbObject> = await this.getCollection();
 
       const result = await collection.findOne<UserDbObject | null>({
-        firebaseId
+        firebaseId,
       });
 
       return result;
@@ -46,12 +49,16 @@ export class UserDataSource implements IUserDataSource {
   }
 
   public async createUser(
-    user: UserDbObject
+    user: UserDbObject,
+    session: ClientSession | undefined
   ): Promise<string> {
     try {
       const collection: Collection<UserDbObject> = await this.getCollection();
 
-      const { acknowledged, insertedId } = await collection.insertOne(user);
+      const { acknowledged, insertedId } = await collection.insertOne(
+        user,
+        session && { session }
+      );
 
       if (!acknowledged) {
         throw new Error("Create user failed");
@@ -65,7 +72,8 @@ export class UserDataSource implements IUserDataSource {
 
   public async editUser(
     userId: string,
-    user: Partial<UserDbObject>
+    user: Partial<UserDbObject>,
+    session: ClientSession | undefined
   ): Promise<UserDbObject> {
     try {
       const collection: Collection<UserDbObject> = await this.getCollection();
@@ -77,7 +85,7 @@ export class UserDataSource implements IUserDataSource {
             ...user,
           },
         },
-        { returnDocument: "after" }
+        { returnDocument: "after", ...(session && { session }) }
       );
 
       if (!result) {

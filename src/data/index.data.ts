@@ -1,7 +1,7 @@
 import { IAddressDataSource } from "./interface/IAddress.datasource" 
 import { IAuthDataSource } from "./interface/IAuth.datasource";
-import { IDatabaseService } from "./interface/IDatabase.service";
-import { IFirebaseService } from "./interface/IFirebase.service";
+import { IDatabaseConnection } from "./interface/IDatabase.connection";
+import { IFirebaseConnection } from "./interface/IFirebase.connection";
 import { IOrderDatasource } from "./interface/IOder.datasource";
 import { IProductDataSource } from "./interface/IProduct.datasource";
 import { IUserDataSource } from "./interface/IUser.datasource";
@@ -12,15 +12,15 @@ import { OrderDataSource } from "./datasource/order.datasource";
 import { ProductDataSource } from "./datasource/product.datasource";
 import { UserDataSource } from "./datasource/user.datasource";
 
-import { MongoDbService } from "./service/mongodb.service";
-import { FirebaseService } from "./service/firebase.service";
+import { MongoDbConnection } from "./connection/mongodb.connection";
+import { FirebaseConnection } from "./connection/firebase.connection";
 
 
 export {
     IAddressDataSource,
     IAuthDataSource,
-    IDatabaseService,
-    IFirebaseService,
+    IDatabaseConnection,
+    IFirebaseConnection,
     IOrderDatasource,
     IProductDataSource,
     IUserDataSource,
@@ -31,6 +31,6 @@ export {
     ProductDataSource,
     UserDataSource,
 
-    MongoDbService,
-    FirebaseService
+    MongoDbConnection,
+    FirebaseConnection,
 }

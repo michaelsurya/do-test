@@ -4,20 +4,20 @@ import { getAuth } from "firebase-admin/auth";
 
 import serviceAccount from "../../../service-account.json";
 
-import { IFirebaseService } from "data/index.data";
+import { IFirebaseConnection } from "data/index.data";
 import { injectable } from "inversify";
 
 @injectable()
-export class FirebaseService implements IFirebaseService {
+export class FirebaseConnection implements IFirebaseConnection {
   private static app: any;
 
   private init() {
-    if (FirebaseService.app) {
-      return FirebaseService.app;
+    if (FirebaseConnection.app) {
+      return FirebaseConnection.app;
     }
 
     try {
-      FirebaseService.app = initializeApp({
+      FirebaseConnection.app = initializeApp({
         credential: credential.cert(serviceAccount as ServiceAccount),
       });
     } catch (e: any) {
@@ -28,7 +28,7 @@ export class FirebaseService implements IFirebaseService {
   public async verifyToken(token: string): Promise<string> {
     this.init();
     try {
-        const decodedToken =  await getAuth(FirebaseService.app).verifyIdToken(token)
+        const decodedToken =  await getAuth(FirebaseConnection.app).verifyIdToken(token)
         
         return decodedToken.uid
     } catch (e: any) {

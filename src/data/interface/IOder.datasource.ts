@@ -5,5 +5,5 @@ export interface IOrderDatasource {
 
   getOrderById(id: string): Promise<OrderDbObject | null>;
 
-  createOrder(userId: string, order: Omit<OrderDbObject, "_id" | "user">): Promise<string>;
+  createOrder(userId: string, order: Omit<OrderDbObject, "_id" | "user">, session?: any): Promise<string>;
 }

@@ -2,19 +2,19 @@ import { injectable, inject } from "inversify";
 
 import { TYPES } from "di/type.di";
 
-import { IDatabaseService, IProductDataSource } from "data/index.data";
+import { IDatabaseConnection, IProductDataSource } from "data/index.data";
 import { ProductDbObject } from "generated/types";
 import { Collection, Db, ObjectId } from "mongodb";
 
 @injectable()
 export class ProductDataSource implements IProductDataSource {
   constructor(
-    @inject(TYPES.IDatabaseService) private readonly dbService: IDatabaseService
+    @inject(TYPES.IDatabaseConnection) private readonly dbConnection: IDatabaseConnection
   ) {}
 
   private async getCollection(): Promise<Collection<ProductDbObject>> {
     try {
-      const db: Db = await this.dbService.getDb();
+      const db: Db = await this.dbConnection.getDb();
       return db.collection("product");
     } catch (e: any) {
       throw e;

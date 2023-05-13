@@ -3,6 +3,7 @@ import { inject, injectable } from "inversify";
 // Data
 import {
   IAddressDataSource,
+  IDatabaseConnection,
   IOrderDatasource,
   IUserDataSource,
 } from "data/index.data";
@@ -24,6 +25,7 @@ import {
 @injectable()
 export class OrderRepository implements IOrderRepository {
   constructor(
+    @inject(TYPES.IDatabaseConnection) private readonly db: IDatabaseConnection,
     @inject(TYPES.IUserDataSource) private readonly userDs: IUserDataSource,
     @inject(TYPES.IAddressDataSource)
     private readonly addressDs: IAddressDataSource,
@@ -78,10 +80,10 @@ export class OrderRepository implements IOrderRepository {
       }
 
       // Get Address
-      const address = await this.addressDs.getAddress(addressId)
+      const address = await this.addressDs.getAddress(addressId);
 
       if (!address || address.user.toString() !== userId) {
-        throw Error("Invalid Address")
+        throw Error("Invalid Address");
       }
 
       const newOder: Omit<OrderDbObject, "_id" | "user"> = {
@@ -91,14 +93,28 @@ export class OrderRepository implements IOrderRepository {
         status: OrderStatus.WAITING,
       };
 
-      // Should do DB Trx
-      const orderId = await this.orderDs.createOrder(userId, newOder);
-      // Empty cart on success
-      await this.userDs.editUser(userId, {
-        cart: { items: [], totalAmount: 0 },
+      // DB Trx
+      const session = await this.db.getSession();
+
+      const trxResult = await this.db.doTransaction(async () => {
+        // Empty cart
+        await this.userDs.editUser(
+          userId,
+          {
+            cart: { items: [], totalAmount: 0 },
+          },
+          session
+        );
+
+        // Create Order
+        const orderId = await this.orderDs.createOrder(
+          userId,
+          newOder,
+          session
+        );
       });
 
-      return orderId;
+      return "true";
     } catch (e: any) {
       throw e;
     }

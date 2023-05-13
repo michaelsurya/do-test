@@ -5,9 +5,9 @@ export interface IAddressDataSource {
 
   getAddress(id: string): Promise<AddressDbObject | null>;
 
-  createAddress(userId: string, address: Omit<AddressDbObject, "_id" | "user">): Promise<string>;
+  createAddress(userId: string, address: Omit<AddressDbObject, "_id" | "user">, session?: any): Promise<string>;
 
-  editAddress(addressId: string, address: Omit<AddressDbObject, "_id" | "user">): Promise<AddressDbObject>;
+  editAddress(addressId: string, address: Omit<AddressDbObject, "_id" | "user">, session?: any): Promise<AddressDbObject>;
 
   deleteAddress(addressId: string): Promise<Boolean>;
 }

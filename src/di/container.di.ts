@@ -10,18 +10,18 @@ import { ContextProvider } from "graphql/provider/context.provider";
 import {
   IAddressDataSource,
   IAuthDataSource,
-  IDatabaseService,
-  IFirebaseService,
   IOrderDatasource,
   IProductDataSource,
   IUserDataSource,
   AddressDataSource,
   AuthDataSource,
-  FirebaseService,
-  MongoDbService,
   OrderDataSource,
   ProductDataSource,
   UserDataSource,
+  IFirebaseConnection,
+  IDatabaseConnection,
+  FirebaseConnection,
+  MongoDbConnection
 } from "data/index.data";
 
 // Address Import
@@ -66,8 +66,8 @@ const container = new Container();
 container.bind<IContextProvider>(TYPES.IContextProvider).to(ContextProvider);
 
 // Data Service Bind
-container.bind<IFirebaseService>(TYPES.IFirebaseService).to(FirebaseService);
-container.bind<IDatabaseService>(TYPES.IDatabaseService).to(MongoDbService);
+container.bind<IFirebaseConnection>(TYPES.IFirebaseConnection).to(FirebaseConnection);
+container.bind<IDatabaseConnection>(TYPES.IDatabaseConnection).to(MongoDbConnection);
 
 // Address Bind
 container
